@@ -1,0 +1,107 @@
+#set dump1 282,689
+keepresources %dump1% f:1b,s:1b,w:2m,i:2m,g:1b
+config comfort:1,wartown:0,hiding:0.5,gate:0.05,warrules:0,trainint:1,troopsusepopmax:1,troopqueuetime:1,troopincrement:1,troopidlequeuetime:0,reservedbarrack:0,acquireflats:0,abandonflats:0,valleymin:9,valley:10,trade:0,troop:0,fortification:1,wallqueuetime:0.5,hero:10,trade:0
+tradepolicy /type:gold /min:1b /allowselltomin
+tradepolicy /type:food /min:1b
+tradepolicy /type:wood /min:5m /max:1b /allowselltomin
+tradepolicy /type:stone /min:900m /max:2b /allowselltomin
+tradepolicy /type:iron /min:5m /max:1b /allowselltomin
+
+distancepolicy 10 8 10 10 15
+comfortpolicy 15 16 popraise
+gatepolicy 2 1 2 1 2
+rallypolicy n:7 v:1
+defensepolicy /junktroop:5000 /usetruce:90
+keepheroes any:level>=100
+keepcapturedheroes any:level>100
+keepcapturedheroes any:base>=70
+nolevelheroes !silent,any:level>100
+config hunting:0
+valleyheroes any:attack>60
+#safevalleyfarm 8,9,10
+valleytroops 1 a:50
+valleytroops 2 a:100
+valleytroops 3 a:200
+valleytroops 4 a:400,sw:1,p:1,s:1,w:1
+valleytroops 5 a:800,sw:1,p:1,s:1,w:1
+valleytroops 6 a:1600,sw:1,p:1,s:1,w:1,c:1
+valleytroops 7 a:10000,sw:1,p:1,s:1,w:1,c:1
+valleytroops 8 a:15000,sw:1,p:1,s:1,w:1,c:1,b:1
+valleytroops 9 a:25000,sw:1,p:1,s:1,w:1,c:1,b:1
+valleytroops 10 a:30000,sw:1,p:1,s:1,w:1,c:1,b:1
+fortification tra:1,ab:1,at:1
+fortification tra:2,ab:2,at:2
+fortification tra:3,ab:3,at:3
+fortification tra:4,ab:4,at:4
+fortification tra:5,ab:5,at:5
+fortification tra:7,ab:7,at:7
+fortification tra:9,ab:9,at:9
+fortification tra:10,ab:10,at:10
+fortification tra:100,ab:100,at:100
+fortification tra:300,ab:250,at:500
+fortification tra:500,ab:500,at:1000
+fortification tra:1000,ab:750,at:5000
+fortification tra:10000,ab:1500,at:7000
+fortification tra:19000,ab:3000,at:10000
+//keepheroes any:base>=68
+config hero:10
+config fasthero:68
+config npc:4,buildnpc:15
+farmingpolicy 5 /mindistance:6 /maxdistance:20 /cycle:10
+npcbuildpolicy /level:5 /mindistance:6 /maxdistance:15
+npcbuildpolicy /level:10 /mindistance:1 /maxdistance:6
+npcheroes 4 !silent,any
+npcheroes 5 silent,any
+npctroops 5 b:500,t:500
+farmingpolicy 10 /cycle:9
+npcheroes 10 silent
+npclimits 10 a:90k
+npctroops 10 a:90k,s:4k,wo:2k,w:2k,t:2k
+//traininghero silent
+config troop:1
+troop /idlequeuetime:5 /usereserved:1 p:1,sw:1,cav:1,w:1
+troop wo:10,w:10,s:10,p:10,sw:10,a:200,c:10,cata:10
+troop wo:250,w:10,s:10,p:10,sw:10,a:5k,c:10
+troop wo:250,w:10,s:10,p:10,sw:10,a:10k,c:10,cata:10,t:40k,b:3k
+troop wo:500,w:100,s:100,p:100,sw:100,a:20k,c:100,cata:50,t:40k,b:5k
+troop wo:500,w:100,s:100,p:100,sw:100,a:25k,c:100,cata:50,t:40k,b:5k
+troop wo:1k,w:500,s:500,p:500,sw:500,a:50k,c:500,cata:100,t:40k,b:5k
+troop wo:1k,w:1k,s:500,p:500,sw:500,a:80k,c:500,cata:500,t:40k,b:5k
+troop wo:3k,w:3k,s:5k,a:50k,sw:1k,p:1k,c:2k,cata:100,b:5k,t:40k
+troop wo:3k,w:3k,s:5k,a:200k,sw:1k,p:1k,c:2k,cata:100,b:5k,t:100k
+requestresources any wood 50k 100k 10k *
+requestresources any iron 50k 100k 10k *
+requestresources any wood 1m 1m 100k *
+requestresources any iron 1m 1m 100k *
+requestresources any wood 5m 5m 1m *
+requestresources any iron 5m 5m 1m *
+requesttroops any b 555 555 100 *
+requesttroops any b 1105 1105 100 *
+requesttroops any b 1655 1655 100 *
+requesttroops any b 2205 2205 100 *
+requesttroops any b 2755 2755 100 *
+requesttroops any b 3305 3305 100 *
+requesttroops any b 3855 3855 100 *
+requesttroops any b 4405 4405 100 *
+requesttroops any b 4955 4955 100 *
+requesttroops any t 600 600 100 *
+requesttroops any t 1500 1500 100 *
+requesttroops any t 2000 2000 100 *
+requesttroops any t 2500 2500 100 *
+requesttroops any t 3000 3000 100 *
+requesttroops any t 3500 3500 100 *
+requesttroops any t 4000 4000 100 *
+requesttroops any t 4500 4500 100 *
+requesttroops any t 40000 5000 100 *
+build c:1:2,f:1:1,s:1:1,i:1:1,q:1:1,inn:1,r:1,b:1:1,s:2:1,m:1,be:1
+build q:2:1,i:3:1,w:1,t:2,a:1,t:2,e:1,f:5:1,st:1
+build c:1:6,c:5:6,a:3,be:3,fh:3,r:3,b:4:1,w:3
+build a:4,be:4,fh:4,r:4,b:5:1,t:4,w:4,m:3,b:9:1,rs:1
+build a:5,be:5,fh:5,r:5,t:5,w:5,a:6,be:6,fh:6,r:6,b:9:2,rs:3
+build t:6,w:6,c:6:6,rs:5,a:7,be:7,fh:7,r:7,b:9:3,b:4:14
+build t:7,w:7,c:7:6,a:8,be:8,fh:8,r:8,b:6:14
+build t:8,w:8,c:8:6,a:9,be:9,fh:9,r:9,b:9:14
+build r:10,t:9,w:9,c:9:6
+build e:9,m:9
+build fh:10,t:10
+build s:10:37
