@@ -1,0 +1,255 @@
+echo "Starting Beginner Quests..."
+
+if city.getActiveBuilding() gosub waitOnBuilding
+
+if city.countBuilding(1,2,10) >= 3 goto stageDone		
+if city.getBuildingLevel(20) >= 1 goto stage8
+if city.getBuildingLevel(32) >= 2 goto stage7
+if city.getBuildingLevel(25) >= 1 goto stage6
+if city.getBuildingLevel(22) >= 2 goto stage5
+if city.getBuildingLevel(23) >= 1 goto stage4
+if city.getBuildingLevel(29) >= 1 goto stage3
+if city.getBuildingLevel(21) >= 1 goto stage2
+
+config comfort:0
+if m_context.ItemCount("player.box.present.2") useitem Newbies_Package
+completequests daily
+completequests routine
+if m_context.ItemCount("player.box.gambling.3") useitem amulet
+sleep 3
+completequests routine
+if m_context.ItemCount("player.box.gambling.3") useitem amulet
+if city.countBuilding(1,1,10) < 1 create c 14		
+if city.countBuilding(1,2,10) < 1 upgrade c		
+if city.getBuildingLevel(21) < 1  create inn 7
+sleep 3
+completequests routine
+
+label stage2
+if city.countBuilding(7,1,10) < 1 create f 1001
+sleep 3
+completequests routine
+if city.countBuilding(4,1,10) < 1  create s 1002
+sleep 3
+completequests routine
+if city.countBuilding(5,1,10) < 1 create q 1003
+sleep 3
+completequests routine
+if city.countBuilding(6,1,10) < 1 create i 1004
+sleep 3
+completequests routine
+production 100 100 100 100
+sleep 3
+completequests routine
+settaxrate 20
+sleep 3
+completequests routine
+settaxrate 10
+MyCities=[]
+cities.forEach(CreateFunction("c,i,a","MyCities.push(c.cityManager.name)"))
+Name = CityNames[floor(random()*CityNames.length)]
+if !(MyCities.indexOf(Name)<0) repeat
+execute (FirstCity == "Wood") && "renamecity {Name} 3" || (FirstCity == "Iron") && "renamecity {Name} 4" || "echo 'couldnt set cityname or pic'"
+sleep 3
+completequests routine
+echo "City renamed to {Name}"
+execute "changeflag {Flag}"
+sleep 3
+completequests routine
+echo "Flag changed to {player.playerInfo.flag}"
+if city.getBuildingLevel(29) < 1 create r 8
+sleep 3
+completequests routine
+
+label stage3
+if city.countBuilding(2,1,10) < 1 create b 11
+sleep 3
+completequests routine
+if city.getBuildingLevel(27) < 1 create fh 3
+sleep 3
+completequests routine
+findhero pol
+completequests routine
+sleep 3
+setmayorbyname none
+setmayor pol
+sleep 3
+completequests routine
+config hero:1
+rewardheroes
+sleep 3
+completequests routine
+if city.countBuilding(4,2,10) < 1 upgrade s
+if city.name == "1" if city.getBuildingLevel(3) < 1 create wh 1
+sleep 3
+completequests routine
+if city.getBuildingLevel(23) < 1 create m 4
+
+label stage4
+sleep 3
+completequests routine
+sell food 1 0.001
+completequests routine
+sleep 3
+buy food 1 0.001
+echo "Market quests complete"
+sleep 3
+completequests routine
+if city.getBuildingLevel(30) < 1 create be 5
+sleep 3
+completequests routine
+if city.countBuilding(5,2,10) < 1 upgrade q
+if city.countBuilding(6,2,10) < 1 upgrade i
+if city.countBuilding(6,3,10) < 1 upgrade i
+completequests routine
+if city.getBuildingLevel(22) < 1 create fo 12
+if city.getBuildingLevel(22) < 2 upgrade fo
+sleep 3
+completequests routine
+
+label stage5
+if city.getBuildingLevel(26) < 1 create ws 10
+sleep 3
+completequests routine
+if city.getBuildingLevel(31) < 2 upgrade t
+sleep 3
+completequests routine
+completequests routine
+if city.getBuildingLevel(32) < 1 create w
+sleep 3
+completequests routine
+dummy = Screen.mainLog.addText("<font size='20' color='#660000'><b>+++++++++ Using a beginner guidelines now! +++++++++</b></font>")
+if city.getBuildingLevel(30) < 2 upgrade /nowait be
+if ItemCount("consume.2.a") buildingspeedup Beginner Guidelines
+sleep 3
+completequests routine
+// 2 cottages @ level 2 and 4 more @ level 1 = 6 total (gives the 1k pop quests)
+if city.countBuilding(1,1,10) < 2 create c 15
+if city.countBuilding(1,1,10) < 3 create c 16
+if city.countBuilding(1,1,10) < 4 create c 17
+if city.countBuilding(1,1,10) < 5 create c 18
+if city.countBuilding(1,1,10) < 6 create c 19
+if city.countBuilding(1,2,10) < 2 upgrade c @15
+sleep 3
+completequests routine
+completequests routine
+completequests routine
+if city.getBuildingLevel(25) < 1 create a 0
+sleep 3
+completequests routine
+
+label stage6
+research ag:1,lu:2
+if city.getBuildingLevel(28) < 1 create e 2
+completequests routine
+echo "You can join an alliance now!"
+sleep 3
+dummy = Screen.mainLog.addText("<font size='20' color='#660000'><b>+++++++++ Using a primary guidelines now! +++++++++</b></font>")
+if city.getBuildingLevel(30) < 3 upgrade /nowait be
+if ItemCount("consume.2.b") buildingspeedup Primary Guidelines
+sleep 3
+completequests routine
+if city.getBuildingLevel(31) < 3 upgrade t
+sleep 3
+completequests routine
+if m_context.ItemCount("player.box.present.4") useitem Package_for_Lords
+sleep 3
+completequests routine
+completequests routine
+completequests routine
+if m_context.ItemCount("player.box.special.1") useitem Junior Medal Box
+sleep 3
+completequests routine
+completequests routine
+disband wo:250
+gosub findNeighbor
+command "mail {foundNeighbor} Hey Just doing the quest"
+sleep 3
+completequests routine
+execute "worldchat q"
+sleep 3
+completequests routine
+if city.getBuildingLevel(32) < 2 upgrade w
+sleep 3
+completequests routine
+
+label stage7
+if city.countBuilding(7,2,10) < 1 if city.fortification.trap < 10 walldefense tra 10
+if city.countBuilding(7,2,10) < 1 if city.fortification.trap < 10 dummy = Screen.mainLog.addText("<font size='15' color='#660000'><b>+++++++++ Waiting for 10 traps to build +++++++++</b></font>")
+if city.countBuilding(7,2,10) < 1 if city.fortification.trap < 10 execute "sleep 15:00"
+if city.countBuilding(7,2,10) < 1 walldefense tra 100 demo
+if city.countBuilding(7,2,10) < 1 upgrade f
+if city.countBuilding(7,3,10) < 1 upgrade f
+if city.countBuilding(7,4,10) < 1 upgrade f
+if city.countBuilding(7,5,10) < 1 upgrade f
+sleep 3
+completequests routine
+if city.getBuildingLevel(20) < 1 create st 6
+completequests routine
+
+label stage8
+research ag:2,lu:2,mas:2,mi:2
+completequests routine
+completequests routine
+if m_context.ItemCount("consume.refreshtavern.1") useitem hero hunting
+sleep 3
+completequests routine
+if player.playerInfo.medal >=80 buyitem junior medal box
+buyitem amulet
+sleep 3
+completequests routine
+
+dummy = Screen.mainLog.addText("<font size='20' color='#660000'><b>+++++++++ Comfort/Levy quests starting +++++++++</b></font>")
+levy stone
+comfort pray
+dummy = Screen.mainLog.addText("<font size='12' color='#660000'><b>+++++++++ Comfort/Levy quests - 1h remaining +++++++++</b></font>")
+sleep 900
+levy wood
+comfort pray
+dummy = Screen.mainLog.addText("<font size='12' color='#660000'><b>+++++++++ Comfort/Levy quests - 45m remaining +++++++++</b></font>")
+sleep 900
+levy iron
+comfort relief
+dummy = Screen.mainLog.addText("<font size='12' color='#660000'><b>+++++++++ Comfort/Levy quests - 30m remaining +++++++++</b></font>")
+sleep 900
+levy gold
+comfort pray
+dummy = Screen.mainLog.addText("<font size='12' color='#660000'><b>+++++++++ Comfort/Levy quests - 15m remaining +++++++++</b></font>")
+sleep 900
+levy food
+comfort bless
+dummy = Screen.mainLog.addText("<font size='20' color='#660000'><b>+++++++++ Comfort/Levy quests complete +++++++++</b></font>")
+if city.countBuilding(1,2,10) < 3 upgrade c		
+
+echo "The city layout is complete."
+echo "There should be 1 slot left for the relief station and 13 more for barracks/cottages. This stuff will be built later."
+
+label stageDone
+call "Script/AutoRunScript.txt"
+
+label findNeighbor
+echo "Finding a neighbor to say hello to..."
+findNeighborDistance = 20
+
+label findNeighborScan
+echo "Search distance is: {findNeighborDistance}"
+execute "rescanrec " + (city.x - findNeighborDistance) + "," + (city.y - findNeighborDistance) + " " + (city.x + findNeighborDistance) + "," + (city.y + findNeighborDistance)
+castles = AllCastles(GetFieldId(city.x - findNeighborDistance , city.y - findNeighborDistance), GetFieldId(city.x + findNeighborDistance , city.y + findNeighborDistance))
+if castles.length < 2 findNeighborDistance += findNeighborDistance
+if castles.length < 2 echo "Only me around here, doubling search distance..."
+if castles.length < 2 goto findNeighborScan
+
+echo "{castles.length} cities around {city.name}({city.coords})" 
+
+label findNeighborNext
+echo "Found neighbor: {castles[1].userName}, sending mail to say hi."
+foundNeighbor = castles[1].userName
+if foundNeighbor == player.playerInfo.userName foundNeighbor = castles[0].userName
+return
+
+label waitOnBuilding
+if !city.getActiveBuilding() return
+echo "Waiting for active building to finish so we can start beginner quests & city layout..."
+execute "sleep {min(ceil((city.getActiveBuilding().endTime - date().getTime()) / 1000),1)}"
+if city.getActiveBuilding() repeat
+return

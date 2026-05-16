@@ -1,0 +1,90 @@
+// NEATer Settings //
+
+// Turn on/off the use of NEATer for Account statistics, logs and email alerts.
+NEATer = "off"	
+
+// Your NEATer user name.			     
+NEATer_Username = "" 
+
+// Your NEATer password.	
+NEATer_Password = ""	
+
+
+// Telegram settings //
+
+// Telegram on/off
+Telegram = "off"
+
+// chat id
+id = "-329661622"
+
+// token
+token = "1021780933:AAHZmWg31rTs6tj6Yv1TDezlfKo85j5gjSI"
+
+
+
+// Basic Settings //	
+
+// The account the alt will annoy and harrass for all sorts of lovely things :)
+Owner = "SilentStalker"		
+
+// This is how long in minutes to run scripts before refreshing them and get updated settings/goals.
+RefreshTime = 120	
+
+// Your flag, for the noob quests.		
+Flag = ["NBK"]
+
+// Alts will quit any other alliance they're in and apply to this one. Use "off" if don't want this.						
+Alliance = ["NBK"]
+
+// Coords of your dump city. Use "off" if you don't want alts to ship excess res anywhere.			
+DumpCity = ["521,598"]	  
+
+// Turn to "off" if you dont want to level 10 farm
+TenFarm = "Yes"
+
+
+// Hero Settings //  
+
+// something here later
+
+
+// AddCity Settings //
+
+// Enable or Disable automatic city building
+NewCityAutoBuild = "Yes"
+
+// The number of free city slots to keep, set to 1 to keep a slot for NPC building			
+NewCitySlotsToKeep = 1
+
+// Enables the script to take flats from Greys and Reds to build new cities					
+NewCityTakeOwnedFlats = "Yes"
+
+// Maximum distance from your city to build a new city			
+NewCityMaxDistance = 50	
+
+// Minimum distance from ["Green","Blue","Grey","Red","No diplo"] castles to build a new city				
+NewCityClearance = [ 5, 5, 5, 5, 5 ]	
+
+// Ignore people who are 'NewcityPresFactor' times smaller than you.
+NewCityPresFactor = 1.5		
+
+
+// CityLayout Settings //	
+
+// City Picture for Wood cities
+//PicW = 3
+
+// City Picture for Iron cities
+//PicI = 4
+
+// Choose either Wood or Iron for your first city
+FirstCity = "Iron"
+
+
+// CityNames Settings //
+
+// Set city names, it will randomly choose a name
+CityNames = ["Blue","Pink","Green","Red","Purple","Yellow","Black","White","Orange","Brown","One","Two","Three","Four","Fife","Six","Seven","Eight","Nine","Ten","Kitty","Puppy","Bunny","Birdy","WasntMe","Dull","BigSmile","Emo","Bow","HighFive","Heidy","Kate","TumbleWeed","Lalala","rofl","Facepalm","Devil","Angel","Mooning","PoolParty"]
+
+return

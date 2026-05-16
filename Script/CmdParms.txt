@@ -1,0 +1,22 @@
+﻿-secure 0
+-logintimeout 60
+//-password YOUR PASSWORD
+-delay 0
+-autologin 1
+-autorun 1
+-autoscripts 1
+-maintenance 22
+-minimizetotray 1
+-minimize 1
+-attackfocus 0
+-balloonattackwarning 0
+-captchaautosolve 0
+-attackwarning 0
+-warreports 0
+-notradingreports 1
+-noattackreports 1
+-noamuletmessages 1
+-nosystemmessages 1
+-showsettings 0
+-sce 0
+-compatible 0

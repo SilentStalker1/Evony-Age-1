@@ -1,0 +1,10 @@
+// DO NOT DELETE!
+// This script is called for any new city that was built or captured
+
+// If there is only town hall, try to build 1 cottage
+// to make sure city is not abandoned on restart
+if city.buildings.length < 2 create cottage
+
+// Set some temporary goals
+@get "Script/NewCityGoals.txt"
+if $error == null goal $result

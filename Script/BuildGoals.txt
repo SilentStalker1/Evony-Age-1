@@ -1,0 +1,193 @@
+echo "Loading building goals..."
+
+// -----------------------------------------------------------------------
+
+if city.timeSlot == (cities.length-1) goto CityBone
+if city.timeSlot != (cities.length-1) goto CityBtwo
+
+// -----------------------------------------------------------------------
+
+label CityBone
+#echo "cityonebuilds"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 goto Lsettingsone
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 goto Isettingsone
+
+label Lsettingsone
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 CC = "7"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 BC = "13"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 BT = "s"
+goto AgeCheckA
+
+label Isettingsone
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 CC = "9"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 BC = "11"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 BT = "i"
+
+label AgeCheckA
+if date() - player.playerInfo.createrTime < 604800000 goto CityBoneA
+if date() - player.playerInfo.createrTime >= 604800000 goto CityBoneB
+
+// -----------------------------------------------------------------------
+
+label CityBoneA
+echo "Builds for City 1 - Under 1 week old"
+build fh:2
+build f:1
+build q:1
+execute "build {BT}:3:40,c:2:{CC},s:3:1,q:3:1,m:3"
+build fh:3
+execute "build {BT}:5:40,c:4:{CC},s:5:1,q:5:1,i:5:1,t:4"
+build fo:4,ws:4
+build b:4:1,a:4,r:4,fh:4,be:4
+build fo:5,ws:5
+execute "build {BT}:6:40,c:4:{CC},s:6:1,q:6:1,i:6:1,a:5,be:5"
+execute "build {BT}:7:40,c:5:{CC},s:7:1,q:7:1,i:7:1"
+if city.getTownHallLevel() >= 5 execute "build {BT}:8:40,s:8:1,q:8:1,i:8:1"
+if city.getTownHallLevel() >= 5 execute "build c:7:{CC}"
+execute "build b:4:5,b:6:2,b:9:1"
+build rs:3
+execute "build b:4:6,b:6:3,b:9:2"
+execute "build a:6,fh:6,r:6,be:6,b:9:3"
+build ?rs:1?rs:5
+execute "build fh:9,r:9,be:9,b:4:{BC},b:6:5"
+build ?ar:9?st:9
+execute "build b:9:4,t:8"
+execute "build a:7,be:7,b:6:6"
+execute "build be:8,b:9:5"
+execute "build be:9,b:6:7"
+execute "build b:9:6"
+build a:9
+build t:10
+execute "build {BT}:9:40,c:9:{CC}"
+execute "build b:9:{BC}"
+build r:10
+build fh:10
+build t:10
+build wh:9
+build m:9
+build w:10
+build rs:10
+return
+
+// -----------------------------------------------------------------------
+
+label CityBoneB
+echo "Builds for City 1 - Over 1 week old"
+build f:1
+build q:1
+execute "build {BT}:3:40,c:2:{CC},s:3:1,q:3:1,m:3"
+execute "build {BT}:5:40,c:4:{CC},s:5:1,q:5:1,i:5:1,t:4"
+build fo:5,ws:5,b:4:1,a:4,r:4,fh:4,be:4
+execute "build {BT}:6:40,c:4:{CC},s:6:1,q:6:1,i:6:1,a:5,be:5"
+execute "build {BT}:7:40,c:5:{CC},s:7:1,q:7:1,i:7:1"
+execute "build b:4:{BC},b:6:2,b:9:1"
+execute "build {BT}:8:40,c:7:{CC},s:8:1,q:8:1,i:8:1"
+build rs:5
+execute "build b:6:3,b:9:2"
+execute "build a:6,fh:6,r:6,be:6,b:9:3"
+execute "build fh:9,r:9,be:9,b:6:5"
+build ?ar:9?st:9
+execute "build b:9:4,t:8"
+execute "build a:7,be:7,b:6:6"
+execute "build be:8,b:9:5"
+execute "build be:9,b:6:7"
+execute "build b:9:6"
+build a:9
+build t:10
+execute "build {BT}:9:40,c:9:{CC}"
+execute "build b:9:{BC}"
+build r:10
+build fh:10
+build ?ar:10?st:10
+build wh:9
+build m:9
+build w:10
+build rs:10
+return
+
+// -----------------------------------------------------------------------
+
+label CityBtwo
+#echo "othercitybuilds"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 goto Lsettingstwo
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 goto Isettingstwo
+
+label Lsettingstwo
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 CC = "7"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 BC = "14"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 BT = "s"
+goto AgeCheckB
+
+label Isettingstwo
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 CC = "9"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 BC = "12"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 BT = "i"
+
+label AgeCheckB
+if date() - player.playerInfo.createrTime < 604800000 goto CityBtwoA
+if date() - player.playerInfo.createrTime >= 604800000 goto CityBtwoB
+
+
+// -----------------------------------------------------------------------
+
+label CityBtwoA
+echo "Builds for City 2+ - Under 1 week old"
+build fh:2
+build f:1
+build q:1
+execute "build {BT}:3:40,c:2:{CC},s:3:1,q:3:1,m:3"
+build fh:3
+execute "build {BT}:5:40,c:4:{CC},s:5:1,q:5:1,i:5:1,t:4"
+build b:4:1,a:4,r:4,fh:4,be:4
+execute "build {BT}:6:40,c:4:{CC},s:6:1,q:6:1,i:6:1,a:5,be:5"
+execute "build {BT}:7:40,c:5:{CC},s:7:1,q:7:1,i:7:1"
+if city.getTownHallLevel() >= 5 execute "build {BT}:8:40,s:8:1,q:8:1,i:8:1"
+if city.getTownHallLevel() >= 5 execute "build c:7:{CC}"
+execute "build b:4:5,b:6:2,b:9:1"
+build rs:3
+execute "build b:4:6,b:6:3,b:9:2"
+execute "build a:6,fh:6,r:6,be:6,b:9:3"
+build rs:5
+execute "build fh:9,r:9,be:9,b:4:{BC},b:6:5"
+execute "build b:9:4,t:8"
+execute "build a:7,be:7,b:6:6"
+execute "build b:9:5"
+execute "build b:6:7"
+execute "build b:9:6"
+build a:9
+execute "build {BT}:9:40,c:9:{CC}"
+execute "build b:9:{BC}"
+build r:10
+build fh:10
+build t:10
+build m:9
+build w:10
+build rs:10
+return
+
+// -----------------------------------------------------------------------
+
+label CityBtwoB
+echo "Builds for City 2+ - Over 1 week old"
+build f:1
+build q:1
+execute "build fh:5,r:5,be:5,b:4:{BC},b:9:1,c:3:{CC}"
+execute "build {BT}:3:40,c:3:{CC},s:3:1,q:3:1,m:3"
+execute "build fh:9,r:9,b:9:2"
+execute "build {BT}:5:40,c:4:{CC},s:5:1,q:5:1,i:5:1,t:4"
+execute "build {BT}:6:40,c:4:{CC},s:6:1,q:6:1,i:6:1"
+execute "build {BT}:7:40,c:5:{CC},s:7:1,q:7:1,i:7:1,be:9"
+execute "build {BT}:8:40,c:7:{CC},s:8:1,q:8:1,i:8:1"
+build rs:5
+execute "build b:6:{BC},b:9:3,a:6"
+execute "build b:9:4,t:8,a:7"
+execute "build b:9:6,a:9"
+execute "build {BT}:9:40,c:9:{CC}"
+execute "build b:9:{BC}"
+build r:10
+build fh:10
+build t:10
+build m:9
+build w:10
+build rs:10
+return

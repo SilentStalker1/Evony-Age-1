@@ -1,0 +1,31 @@
+startTime = 0
+lastAlertTime = 0
+
+if (CityNames.indexOf(city.name)<0) call "Script/Rename.txt"
+
+resetgoals
+call "Script/BasicGoals.txt"
+call "Script/ResearchGoals.txt"
+if city.getBuildingLevel(23) == 10 call "Script/Npc10Goals.txt"
+if city.getBuildingLevel(24) < 10 call "Script/BuildGoals.txt"
+
+if (city.getTownHallLevel() > city.fields.length) call "Script/VSFiller.txt"
+
+label slowLoop
+startTime = date().getTime()
+if ( m_context.Player.playerInfo.flag ) != Flag execute "changeflag {Flag}"
+echo ( m_context.Player.playerInfo.flag )
+if city.timeSlot == (cities.length-1) if Alliance != "off" if player.playerInfo.alliance != null if player.playerInfo.alliance != Alliance command "quitalliance"
+if city.timeSlot == (cities.length-1) if Alliance != "off" sleep 5
+if city.timeSlot == (cities.length-1) if Alliance != "off" if player.playerInfo.alliance == null command "apply {Alliance}"
+if city.timeSlot == (cities.length-1) call "Script/Promo.txt"
+if city.timeSlot == (cities.length-1) if NewCityAutoBuild = "Yes" if m_context.Player.playerInfo.titleId-m_context.cities.length>=NewCitySlotsToKeep if city.getAvailableTroop().archer>50 call "Script/NewCityBuild.txt"
+
+label fastLoop
+if floor((date().getTime() - startTime) / 1000 / 60) >= RefreshTime echo "Refreshing everything, please stand by.."
+if floor((date().getTime() - startTime) / 1000 / 60) >= RefreshTime return
+sleep 90
+call "Script/Looper.txt"
+goto fastLoop
+
+

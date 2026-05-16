@@ -1,0 +1,26 @@
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 CC = "7"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 CC = "9"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 BC = "14"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 BC = "12"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 BT = "s"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 BT = "i"
+
+echo "Loading building and research goals for a level 10 npc city..."
+
+execute "build b:4:{BC}"
+execute "build c:0:{CC}"
+execute "build b:9:{BC}"
+execute "build {BT}:4:40"
+build f:0:1
+execute "build {BT}:9:40"
+build ?ho:10?st:0:0
+build ?met:10?ws:0:0
+build ?ms:10?fo:0:0
+build ?ag:10?f:0:0
+
+research ?ar:10?ho:10
+research met:10,ms:10
+research mi:10,lu:10
+research ag:10,mas:10
+research pr:10
+return

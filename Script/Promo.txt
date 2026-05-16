@@ -1,0 +1,77 @@
+//////////////////////////////////////////
+label PROMO		   
+echo "Checking Medals & Rank Progress..."
+//////////////////////////////////////////
+
+promoGotOffice = 0
+promoMedalCount = "0"
+execute "goto promoTitle{player.playerInfo.titleId}"
+
+label promoNextTitle
+promoOffice = "I am a {player.playerInfo.office}/{promoMyTitle}. I have [{player.playerInfo.castleCount}/{(player.playerInfo.titleId + 1)}] cities." 
+if promoMedalCount != "0" execute "whisper {Owner} {promoOffice} {promoMedalCount}"
+return
+
+label promoTitle0
+promoMyTitle =  "Civilian"
+if (player.playerInfo.office == "General") + (player.playerInfo.office == "Colonel") + (player.playerInfo.office == "Major") + (player.playerInfo.office == "Captain") + (player.playerInfo.office == "Lieutenant") promoGotOffice = 1
+if m_context.ItemCount("hero.loyalty.1") >= 10 if m_context.ItemCount("hero.loyalty.2") >= 5 if promoGotOffice promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.1")}/10] Cross medals and [{m_context.ItemCount("hero.loyalty.2")}/5] Rose medals for Knight."
+if promoGotOffice goto promoNextTitle
+goto promoNextTitle
+
+label promoTitle1
+promoMyTitle =  "Knight"
+if (player.playerInfo.office == "General") + (player.playerInfo.office == "Colonel") + (player.playerInfo.office == "Major") + (player.playerInfo.office == "Captain") promoGotOffice = 1
+if m_context.ItemCount("hero.loyalty.2") >= 10 if m_context.ItemCount("hero.loyalty.3") >= 5 if promoGotOffice promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.2")}/10] Rose medals and [{m_context.ItemCount("hero.loyalty.3")}/5] Lion medals for Baronet."
+if promoGotOffice goto promoNextTitle
+#if m_context.ItemCount("hero.loyalty.1") >= 5 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.1")}/5] Cross medals required for Captain."
+goto promoNextTitle
+
+label promoTitle2
+promoMyTitle =  "Baronet"
+if (player.playerInfo.office == "General") + (player.playerInfo.office == "Colonel") + (player.playerInfo.office == "Major") promoGotOffice = 1
+if m_context.ItemCount("hero.loyalty.3") >= 10 if m_context.ItemCount("hero.loyalty.4") >= 5 if promoGotOffice promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.3")}/10] Lion medals and [{m_context.ItemCount("hero.loyalty.4")}/5] Honor medals for Baron."
+if promoGotOffice goto promoNextTitle
+if m_context.ItemCount("hero.loyalty.2") >= 5 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.2")}/5] Rose medals required for Major."
+goto promoNextTitle
+
+label promoTitle3
+promoMyTitle =  "Baron"
+if (player.playerInfo.office == "General") + (player.playerInfo.office == "Colonel") promoGotOffice = 1
+if m_context.ItemCount("hero.loyalty.4") >= 10 if m_context.ItemCount("hero.loyalty.5") >= 5 if promoGotOffice promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.4")}/10] Honor medals and [{m_context.ItemCount("hero.loyalty.5")}/5] Courage medals for Viscount."
+if promoGotOffice goto promoNextTitle
+if m_context.ItemCount("hero.loyalty.3") >= 5 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.3")}/5] Lion medals required for Colonel."
+goto promoNextTitle
+
+label promoTitle4
+promoMyTitle =  "Viscount"
+if (player.playerInfo.office == "General") promoGotOffice = 1
+if m_context.ItemCount("hero.loyalty.5") >= 10 if m_context.ItemCount("hero.loyalty.6") >= 5 if promoGotOffice promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.5")}/10] Courage medals and [{m_context.ItemCount("hero.loyalty.6")}/5] Wisdom medals for Earl."
+if promoGotOffice goto promoNextTitle
+if m_context.ItemCount("hero.loyalty.4") >= 5 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.4")}/5] Honor medals required for General."
+goto promoNextTitle
+
+label promoTitle5
+promoMyTitle =  "Earl"
+if m_context.ItemCount("hero.loyalty.6") >= 10 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.6")}/10] Wisdom medals and [{m_context.ItemCount("hero.loyalty.7")}/5] Freedom medals for Marquis."
+goto promoNextTitle
+
+label promoTitle6
+promoMyTitle =  "Marquis"
+if m_context.ItemCount("hero.loyalty.7") >= 10 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.7")}/10] Freedom medals and [{m_context.ItemCount("hero.loyalty.8")}/5] Justice medals for Duke."
+goto promoNextTitle
+
+label promoTitle7
+promoMyTitle =  "Duke"
+if m_context.ItemCount("hero.loyalty.8") >= 10 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.8")}/10] Justice medals and [{m_context.ItemCount("hero.loyalty.9")}/5] Nation medals for Furstin."
+goto promoNextTitle
+
+label promoTitle8
+promoMyTitle =  "Furstin"
+if m_context.ItemCount("hero.loyalty.8") >= 30 if m_context.ItemCount("hero.loyalty.9") >= 15 promoMedalCount = "I have [{m_context.ItemCount("hero.loyalty.8")}/30] Justice medals and [{m_context.ItemCount("hero.loyalty.9")}/15] Nation medals for Prinzessin."
+goto promoNextTitle
+
+label promoTitle9
+promoMyTitle =  "Prinzessin"
+promoMedalCount = 0
+goto promoNextTitle

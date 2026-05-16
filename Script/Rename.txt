@@ -1,0 +1,15 @@
+lumber = 0
+iron = 0
+cities.forEach(CreateFunction("c,i,a","c.cityManager.countBuilding(6,1,10)>(c.cityManager.countBuilding(4,1,10)) && iron++ || (c.cityManager.countBuilding(6,1,10) < c.cityManager.countBuilding(4,1,10)) && lumber++"))
+
+execute (lumber > iron) && "echo 'Account has more lumbercities.'" || (lumber < iron) && "echo 'Account has more ironcities.'" || (lumber = iron) && "echo 'Account has same amount of lumbercities and ironcities.'"
+echo "Lets rename your city and give it a city picture."
+
+MyCities=[]
+cities.forEach(CreateFunction("c,i,a","MyCities.push(c.cityManager.name)"))
+Name = CityNames[floor(random()*CityNames.length)]
+if !(MyCities.indexOf(Name)<0) repeat
+
+execute (city.countBuilding(6,1,10) > city.countBuilding(4,1,10)) && "renamecity {Name} 4" || (city.countBuilding(6,1,10) < city.countBuilding(4,1,10)) && "renamecity {Name} 3" || (lumber > iron) && "renamecity {Name} 4" || (lumber < iron) && "renamecity {Name} 3" || (lumber = iron) && (FirstCity == "Wood") && "renamecity {Name} 3" || (lumber = iron) && (FirstCity == "Iron") && "renamecity {Name} 4" || "echo 'couldnt set cityname or pic'"
+
+return

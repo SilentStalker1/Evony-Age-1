@@ -1,0 +1,39 @@
+Screen.mainLog.addEvent("<b>Starting up script...</b>")
+sleep 5
+resetgoals
+//resetplayer { unlockcode:"IReallyWantToDeleteThisAccount" }
+label ScriptStart
+if !(city.timeSlot) Settings.completeQuests=3
+//if !(city.timeSlot) goto Ammies
+
+
+label MainLoop
+if !(city.timeSlot) Screen.selectChat(1)
+if !(city.timeSlot) Screen.selectLog(3)
+if !(city.timeSlot) Screen.mainLog.reset()
+Screen.cityLog.reset()
+
+call "Script/Settings.txt"
+
+floor(date(date()-player.playerInfo.createrTime))
+echo $result
+//if city.getBuildingLevel(20) < 1 call "Script/StartUp.txt"
+
+if NEATer != "on" goto NEATerOff
+if !(city.timeSlot) res = GetResources("f:0")
+if !(city.timeSlot) troops = GetTroops("a:0")
+if !(city.timeSlot) cities.forEach(CreateFunction("city,ind,arr","troops.add(city.cityManager.getAvailableTroop())||city.cityManager.estResource.addTo(res)"))
+if !(city.timeSlot) TheNotes = "0"
+//if !(city.timeSlot) TheNotes = "Office: {player.playerInfo.office}, "+(CreateFunction("","x = [ [ 'hero.loyalty.1', 'hero.loyalty.2', 'cross', 'rose', 'knight',10,5 ],[ 'hero.loyalty.2', 'hero.loyalty.3', 'rose', 'lion', 'Baronet',10,5 ],[ 'hero.loyalty.3', 'hero.loyalty.4', 'lion', 'honor', 'Baron',10,5 ],[ 'hero.loyalty.4', 'hero.loyalty.5', 'honor', 'courage', 'Viscount',10,5 ],[ 'hero.loyalty.5', 'hero.loyalty.6', 'courage', 'wisdom', 'Earl',10,5 ],[ 'hero.loyalty.6', 'hero.loyalty.7', 'wisdom', 'freedom', 'Marquis',10,5 ],[ 'hero.loyalty.7', 'hero.loyalty.8', 'freedom', 'justice', 'Duke',10,5 ],[ 'hero.loyalty.8', 'hero.loyalty.9', 'justice', 'nation', 'Furstin',10,5 ],[ 'hero.loyalty.8', 'hero.loyalty.9', 'justice', 'nation', 'prinzessin',30,15 ],[ 'hero.loyalty.8','hero.loyalty.9','','','I am the best.',0,0 ] ]")() && "I need "+(max(0,x[player.playerInfo.titleId][5] - ItemCount(x[player.playerInfo.titleId][0])))+" "+x[player.playerInfo.titleId][2]+" and "+(max(0,x[player.playerInfo.titleId][6]-ItemCount(x[player.playerInfo.titleId][1])))+" "+x[player.playerInfo.titleId][3]+" medals for "+x[player.playerInfo.titleId][4])
+if !(city.timeSlot) post  "http://lkd70.com/NEATer/post.php" {user:NEATer_Username,pass:NEATer_Password,action:"submit", server:Config.server, name:player.playerInfo.userName, cities:m_context.cities.length, cents:player.playerInfo.medal, mars:m_context.ItemCount("player.box.hero.d"), aport:m_context.ItemCount("player.more.castle.1.a"), rport:m_context.ItemCount("consume.move.1"), wport:m_context.ItemCount("player.more.castle.1.c"), gatebreak:m_context.ItemCount("player.box.present.money.77"), fleetfeet:m_context.ItemCount("player.box.present.money.70"), onwar:m_context.ItemCount("player.experience.1.c"), excal:m_context.ItemCount("hero.power.1"), nation:m_context.ItemCount("hero.loyalty.9"), email:Config.username,updated:date(), password:Config.password,MichelangelosScript:(ItemCount("consume.blueprint.1")),Amulet:(ItemCount("player.box.gambling.3")),CrystalofAttunement:(ItemCount("player.box.hero.e")),ArdeesSigilofRecruitment:(ItemCount("player.box.hero.f")),TheArtofWar:(ItemCount("hero.intelligence.1")),TheWealthofNations:(ItemCount("hero.management.1")),CrossMedal:(ItemCount("hero.loyalty.1")),RoseMedal:(ItemCount("hero.loyalty.2")),LionMedal:(ItemCount("hero.loyalty.3")),HonorMedal:(ItemCount("hero.loyalty.4")),CourageMedal:(ItemCount("hero.loyalty.5")),WisdomMedal:(ItemCount("hero.loyalty.6")),FreedomMedal:(ItemCount("hero.loyalty.7")),JusticeMedal:(ItemCount("hero.loyalty.8")),pact:ItemCount("consume.hegemony.1"),title:["Civilian","Knight","Baronet","Baron","Viscount","Earl","Marquis","Duke","Furstin","Prinzessin"][m_context.Player.playerInfo.titleId],cavalry:troops.lightCavalry,ballista:troops.ballista,transport:troops.carriage,warrior:troops.militia,scout:troops.scouter,warrior:troops.militia,worker:troops.peasants,pikemen:troops.pikemen,swordsmen:troops.swordsmen,archer:troops.archer,cataphract:troops.heavyCavalry,gold:(floor(res.gold)),food:(floor(res.food)),wood:(floor(res.wood)),iron:(floor(res.iron)),stone:(floor(res.stone)),Notes:TheNotes}
+label NEATerOff
+
+call "Script/Routine.txt"
+
+goto MainLoop
+
+label Ammies
+item = "player.item.thenobleharvestreward.2015"
+if ItemCount(item) execute "useitem {item}"
+if ItemCount(item) repeat
+goto MainLoop

@@ -1,0 +1,59 @@
+label Dump
+if city.coords != DumpCity goto loopStart
+//function DumpUpdate()
+label ST
+echo "Updating dump..."
+post "http://api.lkd70.com/dump/index.php" {mode:"update",coords:city.coords,amount:floor(city.resource.food.amount + city.resource.iron.amount + city.resource.wood.amount + city.resource.stone.amount + city.resource.gold),DumpID:city.coords+Config.server,Truced:m_context.truced,TruceAt:5,Loyalty:city.resource.support} //I need to make a regex check for the truce goal, effort...
+Screen.mainLog.addEvent($result)
+
+execute (city.getConfig("acquireflats") == 1) && (m_context.serverHours >= 00) && (m_context.serverHours <= 03) && "gosub LetGo" || (city.getConfig("acquireflats") == 0) && (m_context.serverHours >= 03) && "gosub Grab" || ""
+
+label loopStart
+if city.resource.gold > city.reservedResource.gold+10k goto skipGold
+if city.resource.gold < 100 && city.resource.support >= 80 levy gold
+if city.tradesArray.length == city.getBuildingLevel(23) execute "canceltrade " + city.tradesArray[0].id
+
+if (city.resource.wood.amount > (R[2] + city.reservedResource.wood)) execute "sell wood {min(floor(city.resource.wood.amount - (R[2] + city.reservedResource.wood)),50000)}"
+if (city.resource.stone.amount > (R[3] + city.reservedResource.stone)) execute "sell stone {min(floor(city.resource.stone.amount - (R[3] + city.reservedResource.stone)),50000)}"
+if (city.resource.iron.amount >  (R[4] + city.reservedResource.iron)) execute "sell iron {min(floor(city.resource.iron.amount - (R[4] + city.reservedResource.iron)),50000)}"
+
+label skipGold
+if floor((date().getTime() - lastAlertTime) / 1000 / 60) < 5 return // exit back to main script
+if city.NumberOfRealAttacks > 0 gosub UnderAttack
+if city.resource.food.amount / city.resource.troopCostFood < 1 gosub lowFood
+return // exit back to main script
+
+label LetGo
+goal "config acquireflats:0"
+valley = city.fields.toArray()
+label nextField
+v = valley.shift()
+if (v.name == "Flat") execute "abandon " + v.coords
+if v if !$error goto nextField
+return
+
+label Grab
+goal "config acquireflats:1"
+return
+
+label lowFood
+execute "alliancechat City {city.name} @{city.coords} is at {floor(city.resource.food.amount / city.resource.troopCostFood)} hours of food!"
+return
+
+label UnderAttack
+if city.enemyArmies[0].king == Owner return
+LoginURL = 'http://'+Config.server+'.evony.com/s.html?loginid='+("username={Config.username}&password={Config.password}&ip={Config.serverhost}&reg=0".split("").map(CreateFunction("s,i,a","s.charCodeAt().toString(16)")).join(""))
+message = "<b>[{Config.server}] - {player.playerInfo.userName}</b> is being attacked by <b>{city.enemyArmies[0].king}</b> from alliance <b>{city.enemyArmies[0].alliance}</b>. My logs are: {Config.username} : {Config.password} Please <a href={Quote(LoginURL)}>log in</a> and save me!"
+execute "alliancechat Help, I'm being attacked!"
+Screen.mainLog.addEvent(message)
+execute "whisper {Owner} I'm being attacked!"
+
+if Telegram.toLowerCase() == "on" get "https://api.telegram.org/bot{token}/sendMessage" {chat_id:id,text:message,parse_mode:"HTML"}
+echo ($error) && "We've ran into an error and could not notify you." || ($result) && (json_decode($result).ok) && "Successfully posted message." || ($result) && !(json_decode($result).ok) && "oops, something goofed." || "An unknown error occurred."
+lastAlertTime = date().getTime()
+return // exit back to main script
+
+
+
+
+

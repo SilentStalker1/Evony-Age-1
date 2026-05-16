@@ -1,0 +1,41 @@
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 3 RT = "lu"
+if [ParseInteger(city.castle.logUrl.split("images/icon/cityLogo/citylogo_")[1], 0, 40, ".png")] == 4 RT = "mi"
+
+if city.timeSlot == (cities.length-1) goto CityRone
+if city.timeSlot != (cities.length-1) goto CityRtwo
+
+label CityRone
+echo "Setting city 1 research goals..."
+research ag:1,lu:1
+research ag:2,lu:2,ms:1
+research ag:3,lu:3,mas:2,mi:3,mt:1
+execute "research {RT}:4,met:1,in:3,ir:1"
+execute "research {RT}:5,lo:1,ar:1 ?be:5?in:5"
+execute "research {RT}:6,ho:1,con:5 ?be:6?in:6"
+execute "research {RT}:7,met:5,com:5,ho:4,ar:6 ?be:7?in:7"
+research ar:8,mt:5,ho:5		
+research mt:7,ho:6
+research lo:6,con:6
+research ?ar:9?ho:9
+research ?be:8?in:8				
+research ?be:9?in:10
+research met:9,ms:9,con:9		
+research ar:9
+research ar:10
+execute "research {RT}:9,con:10"
+research mt:10,lo:10,com:9,med:10	
+research ms:10,met:10
+research en:10,mac:10,ir:10		
+research ?ws:10?met:10 ?st:10?ho:10 ?fo:10?ms:10
+research ?s:10:1?lu:10 ?f:10:1?ag:10 ?q:10:1?mas:10 ?i:10:1?mi:10 ?a:10?pr:10 ?s:9:1?lu:9 ?f:9:1?ag:9 ?q:9:1?mas:9 ?i:9:1?mi:9
+research ?wh:1:1?sp:10
+return
+
+label CityRtwo
+echo "Setting additional city research goals..."
+research con:7,in:7,ir:7,com:7,lo:7,mt:7,ar:8
+research con:9,in:9,ir:9,com:9,lo:9,mt:9,ar:10,med:7
+research en:9,mac:9,med:9
+research ir:10,med:10,lo:10,con:10
+research en:10,mac:10
+return

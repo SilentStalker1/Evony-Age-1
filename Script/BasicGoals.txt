@@ -1,0 +1,102 @@
+// ---------------------------------------------------- //
+// ---------------- Apply Basic Goals ----------------- //
+// ---------------------------------------------------- //
+
+echo "Applying basic goals..."
+
+goal "config comfort:1,wartown:0,hiding:0.5,gate:0.05,warrules:0,trainint:1,troopsusepopmax:1,troopqueuetime:1,troopincrement:1,troopidlequeuetime:0,reservedbarrack:0,acquireflats:0,abandonflats:0,valleymin:1,valley:5,trade:0,troop:0,fortification:0,wallqueuetime:0.5"
+goal "distancepolicy 10 8 10 10 15\ncomfortpolicy 15 16 popraise\ngatepolicy 2 2 2 2 2\nrallypolicy n:4\ndefensepolicy /junktroop:100 /usetruce:7"
+goal "keepheroes any:level>=100\nkeepcapturedheroes any:level>100\nkeepcapturedheroes any:base>=70\nnpcheroes any:base>=60,attack>=20\nvalleyheroes any:attack>60"
+goal "valleytroops 1 a:50\nvalleytroops 2 a:100\nvalleytroops 3 a:200\nvalleytroops 4 a:400,sw:1,p:1,s:1,w:1\nvalleytroops 5 a:800,sw:1,p:1,s:1,w:1\nvalleytroops 6 a:2000,sw:1,p:1,s:1,w:1,c:1\nvalleytroops 7 a:4000,sw:1,p:1,s:1,w:1,c:1\nvalleytroops 8 a:8000,sw:1,p:1,s:1,w:1,c:1\nvalleytroops 9 a:15000,sw:1,p:1,s:1,w:1,c:1,b:1\nvalleytroops 10 a:28000,sw:1,p:1,s:1,w:1,c:1,b:1"
+goal "requestresources any food 50k 100k 10k *\nrequestresources any wood 50k 100k 10k *\nrequestresources any stone 50k 100k 10k *\nrequestresources any iron 50k 100k 10k *\nrequestresources any gold 15k 20k 10k *\nrequestresources any food 1m 5m 500k *\nrequestresources any wood 1m 1m 100k *\nrequestresources any stone 1m 1m 100k *\nrequestresources any iron 1m 1m 100k *\nrequestresources any gold 100k 200k 50k *\nrequestresources any food 10m 50m 5m *\nrequestresources any wood 5m 5m 1m *\nrequestresources any stone 5m 5m 1m *\nrequestresources any iron 5m 5m 1m *\nrequestresources any gold 1m 1m 100k *"
+goal "fortification tra:1,ab:1,at:1\nfortification tra:10,ab:10,at:10\nfortification at:50\nfortification at:100\nfortification ab:250,at:500\nfortification ab:500,at:1000\nfortification ab:750,at:5000\nfortification ab:1000,at:10000\nfortification ab:5000,at:15000"
+
+
+// ---------------------------------------------------- //
+// --------------- Apply Dynamic Goals ---------------- //
+// ---------------------------------------------------- //
+
+echo "Setting dynamic goals..."
+
+// heroes
+execute "keepheroes any:base>=68"
+execute "config hero:11"
+execute "config fasthero:68"
+execute "nolevelheroes any:level>100"
+if TenFarm == "Yes" execute "nolevelheroes any:attack<best"
+
+// resources
+if DumpCity != "on" && city.coords != DumpCity execute "keepresources /slots=1 {DumpCity} f:100m,w:1m,s:1m,i:1m 5m"
+TMinF = 1.0
+TMaxF = 1.8
+TEmrgF = 2
+// R = [ gold, food, wood, stone, iron ]
+R = [ 1000,50000,10000,10000,10000 ]
+resRate = city.resource.wood.increaseRate + city.resource.stone.increaseRate + city.resource.iron.increaseRate
+if resRate > 10k R = [ 1000,50000,20000,20000,20000 ]
+if resRate > 50k R = [10000,100000,50000,50000,50000]
+if resRate > 100k R = [10000,150000,100000,100000,100000]
+if resRate > 150k R = [10000,250000,150000,150000,150000]
+if resRate > 200k R = [25000,500000,200000,200000,200000]
+if resRate > 250k R = [100000,1000000,350000,350000,350000]
+if resRate > 300k R = [1000000,5000000,500000,500000,500000]
+if resRate > 350k R = [5000000,50000000,1000000,1000000,1000000]
+execute "tradepolicy /type:gold /min:{R[0]}"
+execute "tradepolicy /type:food /min:{floor(max(city.reservedResource.food*3,R[1]*TMinF))} /max:150m /allowselltomin"
+execute "tradepolicy /type:wood /min:{R[2]} /allowselltomin"
+execute "tradepolicy /type:stone /min:{R[3]} /allowselltomin"
+execute "tradepolicy /type:iron /min:{R[4]} /allowselltomin"
+echo "Trade goals set to...\n\tgold /min:{R[0]}\n\tfood /min:{floor(max(city.reservedResource.food*3,R[1]*TMinF))} /max:150m /allowselltomin\n\twood /min:{R[2]} /allowselltomin\n\tstone /min:{R[3]} /allowselltomin\n\tiron /min:{R[4]} /allowselltomin"
+config trade:1
+
+// walls
+if resRate > 250k if city.coords != DumpCity config fortification:1
+
+// farming
+npcl = 1
+svf = "on"
+
+if city.getAvailableTroop().ballista >= 350 npcl = 3
+if city.getAvailableTroop().ballista >= 550 npcl = 5
+execute "config npc:{npcl}"
+if (city.timeSlot && player.playerInfo.titleId == 9 && TenFarm == "Yes") goal "npcheroes any:attack<best\nnpcheroes 10 any:attack=best\nnpclimits 10 a:90k\nnpctroops 10 a:90k,s:4k,wo:2k,w:2k,t:2k\nfarmingpolicy 10 /cycle:8"
+
+if city.getAvailableTroop().archer > 50 svf = "1,2,3"
+if city.getAvailableTroop().archer > 1k svf = "4,5"
+if city.getAvailableTroop().archer > 2k svf = "5,6"
+if city.getAvailableTroop().archer > 4k svf = "6,7"
+if city.getAvailableTroop().archer > 8k svf = "7,8"
+if city.getAvailableTroop().archer > 15k svf = "9"
+if city.getAvailableTroop().archer > 30k svf = "10"
+if (city.timeSlot && player.playerInfo.titleId == 9) svf = "off"
+if (city.timeSlot && player.playerInfo.titleId == 9) rallypolicy n:7
+execute "safevalleyfarm {svf}"
+
+// troops 
+if date() - player.playerInfo.createrTime >= 604800000 config troop:1
+if resRate > 50k config troop:1
+if city.getBuildingLevel(24) == 10 config troop:1
+
+goal "troop /idlequeuetime:5 /usereserved:1 p:1,sw:1,cav:1,w:1\ntroop wo:10,w:10,s:10,p:10,sw:10,a:200,c:10,cata:10"
+if (city.timeSlot && player.playerInfo.titleId == 9 && TenFarm == "Yes") goal "troop wo:50k,w:50k,s:100k,p:5k,sw:5k,a:200k,c:5k,cata:5k,t:100k,b:5k"
+if city.coords == DumpCity if city.getAvailableTroop().archer > 30k goal "troop wo:1k,w:1k,s:1k,p:1k,sw:1k,a:100k,c:1k,cata:1k,t:6k,b:6k\ntroop a:200k"
+if city.coords != DumpCity if city.getAvailableTroop().archer > 30k goal "troop wo:1k,w:1k,s:1k,p:1k,sw:1k,a:100k,c:1k,cata:1k,t:10k,b:6k\ntroop a:200k,t:40k"
+if city.getAvailableTroop().archer > 15k troop wo:1k,w:1k,s:500,p:500,sw:500,a:80k,c:500,cata:500,t:3k,b:3k
+if city.getAvailableTroop().archer > 8k troop wo:1k,w:500,s:500,p:500,sw:500,a:50k,c:500,cata:100,t:3k,b:3k
+if city.getAvailableTroop().archer > 4k troop wo:500,w:100,s:100,p:100,sw:100,a:25k,c:100,cata:50,t:3k,b:3k
+if city.getAvailableTroop().archer > 2k troop wo:500,w:100,s:100,p:100,sw:100,a:20k,c:100,cata:50,t:3k,b:3k
+if city.getAvailableTroop().archer > 1k troop wo:250,w:10,s:10,p:10,sw:10,a:10k,c:10,cata:10,t:3k,b:3k
+if city.getAvailableTroop().archer > 50 troop wo:250,w:10,s:10,p:10,sw:10,a:5k,c:10
+
+if city.getAvailableTroop().archer > 30k config buildnpc:15
+
+if city.getBuildingLevel(25) >= 4 goal "requesttroops any wo 100 500 100 100\nrequesttroops any w 100 500 100 100\nrequesttroops any s 100 500 100 100\nrequesttroops any p 100 500 100 100\nrequesttroops any sw 100 500 100 100\nrequesttroops any c 100 100 10 100\nrequesttroops any cata 100 100 10 100"
+if city.getBuildingLevel(25) >= 4 goal "requesttroops any a 32k 32k 1k *\nrequesttroops any a 62k 62k 1k *\nrequesttroops any a 92k 92k 1k *"
+if city.getBuildingLevel(25) >= 4 goal "requesttroops any b 555 555 100 *\nrequesttroops any b 1105 1105 100 *\nrequesttroops any b 1655 1655 100 *\nrequesttroops any b 2205 2205 100 *\nrequesttroops any b 2755 2755 100 *\nrequesttroops any b 3305 3305 100 *\nrequesttroops any b 3855 3855 100 *\nrequesttroops any b 4405 4405 100 *\nrequesttroops any b 4955 4955 100 *"
+if city.getBuildingLevel(25) >= 4 goal "requesttroops any t 600 600 100 *\nrequesttroops any t 1500 1500 100 *\nrequesttroops any t 2000 2000 100 *\nrequesttroops any t 2500 2500 100 *\nrequesttroops any t 3000 3000 100 *\nrequesttroops any t 3500 3500 100 *\nrequesttroops any t 4000 4000 100 *\nrequesttroops any t 4500 4500 100 *\nrequesttroops any t 5000 5000 100 *"
+stuckWaves=player.selfArmysArray.toArray().filter(CreateFunction("x,i,a","x.reachTime<date().time && x.missionType != 2"))
+if stuckWaves.length echo "recalling {stuckWaves.length} stuck waves"
+if stuckWaves.length execute "idrecall {stuckWaves.shift().armyId}"
+if stuckWaves.length repeat
+
+return

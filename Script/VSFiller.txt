@@ -1,0 +1,27 @@
+if city.getAvailableTroop().archer < 300 goto NotEnough
+troops = "a:200"
+distance = 10
+
+label findValleys
+execute "rescanmap {city.coords} {distance}"
+deserts = FindField(city.x,city.y,distance,2,1).concat(FindField(city.x,city.y,distance,2,2),FindField(city.x,city.y,distance,2,3))
+swamps = FindField(city.x,city.y,distance,4,1).concat(FindField(city.x,city.y,distance,4,2),FindField(city.x,city.y,distance,4,3))
+grasslands = FindField(city.x,city.y,distance,5,1).concat(FindField(city.x,city.y,distance,5,2),FindField(city.x,city.y,distance,5,3))
+lakes = FindField(city.x,city.y,distance,6,1).concat(FindField(city.x,city.y,distance,6,2),FindField(city.x,city.y,distance,6,3))
+VSvalleys = deserts.concat(swamps,grasslands).sort(city.compareByDistanceToCastle)
+
+label nextValley
+if (city.getTownHallLevel() = city.fields.length || !VSvalleys.length) return
+thisValley = VSvalleys.shift()
+lagCount = 0
+details = GetDetailInfo(thisValley)
+if (details == null) && (lagCount++ <10) repeat
+if (details == null) goto nextValley
+if (RelationIndex(details)==0 ) || (RelationIndex(details)==2) || (RelationIndex(details)==3) || (details.relation=6) goto nextValley
+if city.getAvailableTroop().archer < 300 goto NotEnough
+execute "attack {FieldIdToCoords(thisValley)} any:level<120 {troops}"
+execute "sleep "+ round(($result.reachTime-date().time)/1000)
+goto nextValley
+
+label NotEnough
+return
