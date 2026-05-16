@@ -1,0 +1,97 @@
+                             
+// Put the name of your best atk hero here, you can change it later when you get better.
+// If you don't wanna use these, or don't have them yet, just make up any fake name to prevent errors, like "blah" and "bleh"
+set th silent2
+
+// city config stuff
+config wartown:0,warrules:6,comfort:1,valley:9,gate:0.05,hiding:0.5,hero:1,npc:5,buildnpc:15,troopsusepopmax:1,troopqueuetime:.5,troopincrement:1,troopidlequeuetime:0,reservedbarrack:0,valleymin:10,wallqueuetime:0.2,hero:10 
+config trade:0
+tradepolicy /type:food /min:800b
+tradepolicy /type:wood /min:5b /allowselltomin
+tradepolicy /type:stone /min:5b /allowselltomin
+tradepolicy /type:iron /min:5b /allowselltomin
+tradepolicy /type:gold /min:10b
+ 
+comfortpolicy 15 16 popraise
+distancepolicy 6 10 8 8 15
+gatepolicy 2 0 2 0 1
+defensepolicy /junktroop:100 /usespeech:6 /usetruce:95 /usecorselet:1 /usepenicillin:1
+// hero stuff
+// Uncomment the next line once you have enough gold income to use fasthero with
+#config fasthero:68
+
+keepheroes any:level>=80
+keepcapturedheroes any:level>=100,base>68|any:level>=150,base>60|any:level>=200
+//nolevelheroes gurneit,halckit
+// Use something like "traininghero %th% 120 180 0" on future cities that your traininghero won't farm in
+traininghero %th%
+
+// farming stuff
+npcheroes 5 !silent2,any:base>=65
+npcbuildpolicy /level:1-4 /mindistance:0 /maxdistance:0
+npcbuildpolicy /level:5 /mindistance:1 /maxdistance:10
+npcbuildpolicy /level:6-9 /mindistance:1 /maxdistance:5
+npcbuildpolicy /level:10 /mindistance:1 /maxdistance:10
+// farm lvl 6 npcs (to enable, remove the # before npclimit)
+npcheroes 6 silent2
+npctroops 6 a:66k,s:6k,t:1k
+#npclimit 6 a:101k
+
+// farm lvl 7 npcs (to enable, remove the # before npclimit)
+npcheroes 7 silent2
+npctroops 7 a:77k,s:7k,t:1k
+#npclimit 7 a:101k
+
+// farm lvl 8 npcs
+npcheroes 8 silent2
+npctroops 8 a:94k,s:5k,t:1k
+npclimit 8 a:101k
+
+// farm lvl 9 npcs (to enable, remove the # before npclimit)
+npcheroes 9 silent2
+npctroops 9 a:93k,s:5k,t:2k
+#npclimit 9 a:101k
+
+// farm lvl 10 npcs
+npcheroes 10 silent2
+npclimits 10 a:101k
+npctroop 10 a:93k,s:5k,t:2k
+
+// troop training stuff
+troop /idlequeuetime:1 /usereserved:1 p:1,sw:1,cav:1,w:1
+troop /idlequeuetime:1 wo:10,w:10,s:10,p:10,sw:10,a:10,c:10,cata:10
+// Uncomment stuff below when you have res to use on troops
+troop /idlequeuetime:1 wo:1k,b:5k,t:5k
+troop t:15k,b:8k,cp:1k,r:3k,p:1k,sw:10k
+troop wo:50k,w:50k,s:400k,p:10k,sw:200k,a:400k,c:50k,cata:20k,t:320k,cp:10k,r:35k,b:10k
+troop c:100k,cata:100k,p:20k,sw:700k,t:700k
+troop t:1m,b:30k,cp:30k,r:90k
+troop r:100k,c:200k,cata:300k
+troop a:500k,sw:1.1m,p:25k
+troop wo:100k,w:100k,s:600k,p:100k,sw:2.1m,b:100k,r:350k,cp:100k
+
+// valley stuff
+valleyheroes any
+// Change the 1,2,3 to higher levels as you gain more troops. Goal would be "safevalleyfarm 9,10" when you have 30k+ archers in the city.
+//safevalleyfarm 8,9,10
+valleytroops 1 a:50
+valleytroops 2 a:100
+valleytroops 3 a:200
+valleytroops 4 a:400,sw:1,p:1,s:1,w:1
+valleytroops 5 a:800,sw:1,p:1,s:1,w:1
+valleytroops 6 a:1600,sw:1,p:1,s:1,w:1,c:1
+valleytroops 7 a:10k,sw:1,p:1,s:1,w:1,c:1
+valleytroops 8 a:25k,sw:1,p:1,s:1,w:1,c:1,b:1
+valleytroops 9 a:25k,sw:1,p:1,s:1,w:1,c:1,b:1
+valleytroops 10 s:100k
+// wall building stuff
+//fortification tre:16k
+
+//fortification tra:1,ab:1
+//fortification tra:10,ab:10
+//fortification tra:100,ab:100
+//fortification tra:50k,ab:2500
+
+// Walls with ATs
+fortification tra:19000,ab:3000,at:10000
+//fortification tra:25000,ab:3000,at:8000
