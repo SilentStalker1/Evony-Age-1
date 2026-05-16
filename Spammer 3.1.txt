@@ -1,0 +1,71 @@
+label autorun
+Distance = 30
+HeroString = "!silent,!poil,any"
+Troops = "cav:70k,s:30k"
+MinCav = 5000
+# Changed to 'trashcity' just in case 'trash' is too short for the server
+TrashName = "trashcity"
+
+label Scan
+execute "rescanrec {city.x - Distance},{city.y - Distance} {city.x + Distance},{city.y + Distance}"
+castles = AllCastles(GetFieldId(city.x - Distance, city.y - Distance), GetFieldId(city.x + Distance, city.y + Distance))
+echo "Scanning... Found {castles.length} cities."
+
+if castles.length == 0 goto TeleportTime
+CityIndex = 0
+
+label NextCity
+info = castles[CityIndex]
+if info == null goto TeleportTime
+coords = FieldIdToCoords(info.id)
+
+if info.userName == player.name goto SkipCity
+if info.state != 1 goto SkipCity
+if city.troop.lightCavalry < MinCav goto Scan
+
+echo "TARGET LOCKED: {coords}"
+goto HitCity
+
+label HitCity
+execute "attack {coords} {HeroString} {Troops}"
+if $error goto VerifyAndRename
+sleep 2
+goto HitCity
+
+label VerifyAndRename
+execute "getfieldinfo {coords}"
+
+if info.userName == player.name
+    if info.id != city.id
+        echo "Capture confirmed. Renaming and dropping..."
+        
+        # FIX 1: Using "renamecity {coords} {name}" format
+        # If this still says 'invalid name', try: execute "renamecity {coords} \"trashcity\""
+        execute "renamecity {coords} {TrashName}"
+        sleep 3
+        
+        # FIX 2: Using {coords} instead of {TrashName} 
+        # The bot log says 'abandontown trash' is invalid, it wants the numbers.
+        echo "Abandoning city at {coords}..."
+        execute "abandontown {coords}"
+        
+        sleep 5
+        goto FinishCity
+    end
+end
+
+goto FinishCity
+
+label FinishCity
+CityIndex = CityIndex + 1
+goto NextCity
+
+label SkipCity
+CityIndex = CityIndex + 1
+goto NextCity
+
+label TeleportTime
+echo "Teleporting..."
+execute "teleport random"
+sleep 15
+goto Scan
