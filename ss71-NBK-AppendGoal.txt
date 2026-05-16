@@ -1,0 +1,10 @@
+defensepolicy /usetruce:%truce% /usespeech:1 /junktroop:%junk%
+
+traininghero %besthero% 120 300 1
+
+nolevelheroes %nolvl%|any:lvl>4633
+
+keepresources %rescity% %keepres%
+
+fortification %fort1%
+fortification %fort2%

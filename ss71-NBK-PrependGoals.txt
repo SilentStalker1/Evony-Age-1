@@ -1,0 +1,208 @@
+set besthero trainer
+
+set rescity none
+
+set keepres w:15m,i:15m,f:350m,s:15m 10m
+
+set truce 6
+// what loy should city truce at? default to 6, but you can over-ride this
+// in city goals using "set truce 99" (without the quotes)
+
+set junk 10
+// junktroops can be over-ridden in city using "set junk 21000" to ignore 21k sbs.
+
+config wartown:0,warrules:1
+
+config attackgap:32
+config gate:0.1
+config hiding:0.2
+
+gatepolicy 2 0 2 2 2
+// over-ride above by re-writing it in city goals.
+
+config comfort:1,defensecooldown:1
+
+//comfortpolicy 15 16 popraise
+// do population raising every 15-16 mins
+
+warehousepolicy 85 5 5 5
+// %food %lumber %stone %iron
+
+taxpolicy 0 60 0
+// sets minimum and maximum taxes .... 60 would be absolute maximum tax.
+
+//config trainpol:1
+//config trainint:1
+
+config keepatthome:1
+homeheroes 3
+// enable above lines on main accounts. not needed on alts.
+
+config troopqueuetime:0.25
+config troopincrement:1
+config reservedbarrack:1
+config troopsusepopmax:1
+config troopsusereserved:0.75
+config troopidlequeuetime:1
+config troopdelbadque:1
+
+config trade:1
+tradepolicy /type:gold /min:100m
+tradepolicy /type:food /min:150m /allowselltomin
+tradepolicy /type:wood /min:5m /allowselltomin
+tradepolicy /type:stone /min:10m /allowselltomin
+tradepolicy /type:iron /min:5m /allowselltomin
+
+distancepolicy 7 15 3 10 10
+// max distance (farming) (building-npcs) (medal-hunting) (valleys) (map-size)
+
+rallypolicy n:10:5 n:7 v:2 m:5 t:2
+//# of each mission to send from the rally.
+
+#config trainpol:1
+#config trainint:1
+
+processingpolicy b:100 n:10 *:1
+
+/// HEROES
+
+config hero:1
+// over-ride this by putting following in city goals: 
+#config hero:10,fasthero:88
+
+keepheroes any:level>=50|any:base>75
+keepcapturedheroes any:level>=100|any:exp>1000000
+
+// make the low level intel heroes into attack heroes:
+#heropoints any:int>70,lvl<200 att
+
+// once hero gets to instant pults (with excal) assign points to intel:
+#heropoints any:att>=1221 int
+
+// once hero gets to natural instant treb, assign points to attack:
+#heropoints any:pol>=1066 att
+
+set nolvl !%besthero%,!mayor,!att,any:lvl=19|!%besthero%,!mayor,!att,any:lvl>=129
+
+/// VALLEYS ///
+
+valleyheroes !%besthero%,!att,any:lvl<400,base<80,att>50,att<best,pol<best
+
+config valleymin:9,valley:10,keepvalleys:10
+valleytroops 10 p:1,sw:1,a:25k,cata:1,c:1,wo:1,w:1,r:1,b:100
+valleytroops 9 p:1,sw:1,a:20k,cata:1,c:1,wo:1,w:1
+
+// following lines are to grab flats with scouts
+valleytroops /level:1 /type:fl s:1000
+valleytroops /level:2 /type:fl s:2500
+valleytroops /level:3 /type:fl s:5000
+valleytroops /level:4 /type:fl s:8000
+valleytroops /level:5 /type:fl s:10000
+valleytroops /level:6 /type:fl s:25000
+valleytroops /level:7 /type:fl s:50000
+valleytroops /level:8 /type:fl s:75000
+valleytroops /level:9 /type:fl s:80000
+valleytroops /level:10 /type:fl s:100000
+
+#valleylimit a:101k
+#config hunting:9
+
+/// NPCs
+
+config acquireflats:1,abandonflats:1,buildnpc:15,npc:3
+
+// following goals build lvl 3,4,5,8 & 10 npcs:
+npcbuildpolicy /level:1-4 /mindistance:0 /maxdistance:0
+npcbuildpolicy /level:5 /mindistance:1 /maxdistance:10
+npcbuildpolicy /level:6-9 /mindistance:0 /maxdistance:0
+npcbuildpolicy /level:10 /mindistance:1 /maxdistance:10
+
+// heroes to be used for npc lvl 1-5:
+npcheroes !%besthero%,!mayor,any:lvl<400,pol<best
+
+// farm lvl 6 npcs (to enable, remove the # before npclimit)
+npcheroes 6 any:att>200,lvl<800
+npctroops 6 a:66k,s:6k,t:1k
+#npclimit 6 a:101k
+
+// farm lvl 7 npcs (to enable, remove the # before npclimit)
+npcheroes 7 any:att>200,lvl<800
+npctroops 7 a:77k,s:7k,t:1k
+#npclimit 7 a:101k
+
+// farm lvl 8 npcs
+npcheroes 8 any:att>200,lvl<800
+npctroops 8 a:94k,s:5k,t:1k
+npclimit 8 a:101k
+
+// farm lvl 9 npcs (to enable, remove the # before npclimit)
+npcheroes 9 any:att>200,lvl<800
+npctroops 9 a:93k,s:5k,t:2k
+#npclimit 9 a:101k
+
+// farm lvl 10 npcs
+npcheroes 10 att,any:att>240,lvl<800
+npclimits 10 a:101k
+npctroop 10 a:93k,s:5k,t:2k
+
+/// FORTIFICATIONS
+
+config fortsusereserved:0.9
+// use up to 90% of reserved resources to build walls
+
+config wallqueuetime:0.01
+// time relative to 1 hour for wall queue builds. 0.01 = 36 seconds
+
+set fort1 ab:2500
+set fort2 tre:10000
+
+// alter this in city by re-defining fort2:
+#set fort2 tra:5000,at:10000
+
+/// TROOP BUILD LINES
+
+// leave the following 4 lines alone if you know what is good for you.
+troop /idlequeuetime:1 /usereserved:1 p:1,sw:1
+troop /idlequeuetime:1 /usereserved:1 p:10,sw:10
+troop /idlequeuetime:2 /usereserved:1 wo:10,w:10,s:10,p:10,sw:10,a:10,c:10
+troop wo:1k,w:100,p:100,sw:100,c:250,cata:10
+
+// next line is for basic npc5 farm crews:
+troop wo:2500,b:4k,t:15k,r:10,cp:10,a:1k
+
+// enable line below to produce troops for medal farming and lvl 10 npc farming:
+troop w:1k,s:125k,a:125k,sw:1k,p:1k,c:1k,cata:100,b:7k,t:25k,r:100,cp:100
+
+// enable line below to build more signifcant troops
+#troop wo:5k,w:2k,s:350k,a:750k,sw:2k,p:2k,c:50k,cata:1k,b:25k,t:120k,ram:1k,cp:1k
+
+// note you can always put additional troop lines in city goals, and when the minimums posted above are reached,
+// it will begin training what is listed in city goals
+
+/// TROOP REQUESTS
+
+requesttroops any transport 6k 15k 7k
+requesttroops any ballista 1k 4k 2k
+requesttroops any archer 100k 200k 50k
+requesttroops any scout 100k 150k 25k
+
+/// RESOURCE REQUESTS
+requestresources any food 10m 12m 500k 1m scout
+requestresources any gold 1m 3m 500k 1m scout
+requestresources any wood 1m 3m 500k 1m scout
+requestresources any iron 1m 3m 500k 1m scout
+requestresources any stone 1m 3m 500k 1m scout
+
+requestresources any food 20m 40m 5m 20m c
+
+#requestresources any wood 10m 15m 5m 10m c
+#requestresources any iron 10m 15m 5m 10m c
+#requestresources any stone 10m 15m 5m 10m c
+
+// enable above lines on mains that you wish to build more troops on. not needed on alts.
+
+requestresources any food 80m 120m 10m 50m
+
+/// CITY BUILDINGS
+
+build t:10,b:10:2,r:10,fh:10,wh:9,f:9:1,q:9:1,i:9:1,s:9:1,m:9,inn:2:0
