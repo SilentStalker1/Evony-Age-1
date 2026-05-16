@@ -1,0 +1,202 @@
+//label autorun
+config wartown:0
+
+// this will sleep until a set time of day to do scouting so as not to interfere with farming. 
+// time for script to begin is YOUR local time in military format.
+#sleep @:12:00:00
+// comment out above line if you just want to scout now.
+
+// distance to scout out to (miles)
+radius = 300
+// amount of scouts to use to scout
+scoutWave = "s:10k"
+
+// NOTHING TO EDIT BELOW HERE
+config wartown:1
+echo "Beginning scout all cities script..."
+execute "scanmap {city.coords} {radius}"
+allCities = FindField(city.x,city.y,radius,11).sort(city.compareByDistanceToCastle)
+echo "Found {allCities.length} cities within {radius} miles of this city."
+label checkCity
+if allCities.length = 0 goto allCitiesScouted
+thisCity = allCities.shift()
+// get details on coords, but if server is laggy skip coords
+attempts = 0
+label getDetails
+details = GetDetailInfo(thisCity, false, 30) 
+if details goto gotDetails
+if ++attempts < 10 goto getDetails
+echo "Server is being laggy, cannot get details on {FieldIdToCoords(thisCity)}, skipping."
+goto checkCity
+label gotDetails
+// if you can't scout it, or its in a neutral alliance skip to next city
+if ((!details.canScout) || (RelationIndex(details) == 4)) goto checkCity
+// wait for open rally spot (keep 1 open for trainer/ hiding)
+label waitForRally
+if city.rallySpotAvailable(1,1) goto scoutIt
+echo "Waiting for free rally spot, sleeping for 1 minute..."
+sleep 60
+goto waitForRally
+label scoutIt
+echo "Scouting {details.name}({FieldIdToCoords(thisCity)}) {details.userName} [{details.allianceName}]"
+execute "scout {FieldIdToCoords(thisCity)} none {scoutWave}"
+goto checkCity
+// done scouting
+label allCitiesScouted
+config wartown:0
+echo "Finished scouting! You should review & process reports now."
+// sleep for an hour
+sleep 60:00
+goto autorun
+///////////////////////////////////END OF SCOUT SCRIPT////////////////////////////////////
+
+//REPORT SCRIPT
+//label autorun
+
+// Output to AC?
+1: spamAC = 1
+// minimum resources to report
+2: minRes = 5b
+
+// low loyalty to report @ and below
+3: lowLoyalty = 0
+
+4: backtime = 1000 * 60 * 60 * 48
+// backtime = how far back in time to view reports (default is 12 hours)
+// (1000 milliseconds/sec * 60 sec/min * 60 min/hr * 12 hours) = time in milliseconds 
+
+///////////NOTHING TO EDIT BELOW HERE/////////////////
+
+// gsUrl = the link to your neato google sheets app 
+5: gsUrl = "https://discord.com/api/webhooks/1488768502767554711/rT-fRTMQzBJOhGCeAyPdzNIQbHS0G2680LKvEApq65ODvo2ZdlV7YFuHD2SEorucvgKM"
+
+// set the telegram bot token for @Scoutbot_bot
+6: token = "1061974632:AAGzpn4COjXjcC5nttgSjgenpc-njwEt6zo"
+
+// set the telegram group chat_id 
+7: telegramChatId = "g568238370"
+
+8: telegramUrl = "https://discord.com/api/webhooks/1488768502767554711/rT-fRTMQzBJOhGCeAyPdzNIQbHS0G2680LKvEApq65ODvo2ZdlV7YFuHD2SEorucvgKM"
+
+// Get start time
+9: st = date()
+// 'timeBase' is the adjusted start time to allow the script to "go back" in the report history.
+10: timeBase = st.getTime() - backtime
+11: FormatNum = CreateFunction("n","(p=n>=1t && 5 || n>=1b && 4 || n>=1m && 3 || n>=1k && 2 || 1) && FormatNumber(n/pow(10,p*3-3),p>1 && 2 || 0)+(p>1 && 'kmbt'.substr(p-2,1) || '')")
+12: FormatNumM = CreateFunction("n","FormatNumber(n/1000000,1,true)")
+
+13: alreadyScouted = ["this will be auto generated do not edit"]
+
+// MAIN LOOP
+label rewind
+14: page = 0
+15: lastReport = 0
+16: cleanreports arrived,returned,barbarian
+label nextPage
+//22: sleep rnd:30:60
+17: page ++
+18: command "quickarmyreport {page}"
+19: if $result = null goto rewind
+20: x = $result.split("\n")
+// The first entry can be skipped (Page: n/m)
+21: y = 1
+label nextPageEntry
+22: if y >= x.length goto nextPage
+// process the quickarmyreport line
+23: thisReport = x[y].match(/\[(.*)\](ATT|DEF) (.*) Reports from (.*)\((.*)\) to (.*)\((.*)\) on (.*)/)
+//thisReport[1] = reportId
+//thisReport[2] = ATT or DEF
+//thisReport[3] = Scout or Attack
+//thisReport[4] = attacker city name
+//thisReport[5] = attacker coords
+//thisReport[6] = defender city name
+//thisReport[7] = defender coords
+//thisReport[8] = time of attack
+
+// if the current report is too old then we are done analyzing reports
+24: if thisReport if date(thisReport[8]).getTime() - timeBase < 0 goto prepRewind
+
+// Here we have a report (Scout or Attack) which is "fresh"
+25: if thisReport if thisReport[1] != lastReport if thisReport[2] = "ATT" if thisReport[3] = "Scout" if thisReport[6] != "Barbarian's city" gosub processScoutReport
+
+26: y++
+27: goto nextPageEntry
+label processScoutReport
+28: lastReport = thisReport[1]
+29: echo "Processing Scout Report [{thisReport[1]}] {thisReport[6]}({thisReport[7]})"
+
+
+// Get more details on the report
+30: command "readreport "+thisReport[1]
+// Get the xml form of report url
+31: url = $result.replace(/.*\'event:(.*)'><u.*/mg,"$1").split("\n")[0].replace(/(.*)default.html\?(.*)/mg,"$1$2")
+// Fetch the xml
+32: get url
+33: if $error return
+34: report = xml($result)
+35: attempts = 0
+36: thisLoc = GetDetailInfo(GetFieldId(thisReport[7]), false, 30) 
+37: if thisLoc == null if attempts++ <10 repeat
+38: if thisLoc == null echo "Skipping processing report on {thisReport[7]} as server is too laggy."
+39: if thisLoc == null return
+40: lordName = (thisReport[6] != thisLoc.name) && "???" || thisLoc.userName
+41: alliance = (thisReport[6] != thisLoc.name) && "???" || thisLoc.allianceName
+42: if !alliance alliance = "UNALLIED"
+43: if thisReport[6] != thisLoc.name echo "thisReport[6] = {thisReport[6]} thisLoc.name = {thisLoc.name}"
+44: if report.scoutReport.@isSuccess != "true" goto failedScout // didnt get a report
+45: resTotal = 1*(report.scoutReport.scoutInfo.resource.food)+1*(report.scoutReport.scoutInfo.resource.wood)+1*(report.scoutReport.scoutInfo.resource.stone)+1*(report.scoutReport.scoutInfo.resource.iron)+1*(report.scoutReport.scoutInfo.@gold)
+46: troops = GetTroopsFromXML(report.scoutReport.scoutInfo.troops.troopStrType) || GetTroops("a:0")
+47: if report.scoutReport.scoutInfo.@support <= lowLoyalty goto lowLoyalty
+48: echo "Good scout report of {thisReport[6]}({thisReport[7]}) {thisLoc.zoneName} res: {FormatNum(resTotal)} burn: {FormatNum(troops.foodConsumeRate)}/hr Loyalty: {report.scoutReport.scoutInfo.@support}"
+
+49: if alreadyScouted.indexOf(thisReport[7]) > 0 echo "Skipping {thisReport[7]} as its already been scouted."
+50: if alreadyScouted.indexOf(thisReport[7]) > 0 return
+51: alreadyScouted.push(thisReport[7])
+
+52: get "http://ww.evonyurl.com/battle" {url:url} // send report to evonyurl.com
+53: eurl = json_decode($result) //decode the JSON reply from evonyurl
+54: if eurl.token url = "http://evonyurl.com/{eurl.token}"
+55: echo "Scout report on {thisReport[6]}({thisReport[7]}) {thisLoc.zoneName} owner: {lordName} alliance: {alliance} res: {FormatNum(resTotal)} burn: {FormatNum(troops.foodConsumeRate)}/hr Loyalty:{report.scoutReport.scoutInfo.@support} evonyurl.com/{eurl.token}"
+//56: if (NeutralAlliances.indexOf(alliance) >= 0) goto neutralReport
+56: if gsUrl post gsUrl {sheetName:"ScoutReports",deleteOld:"Coords",DateTime:date(thisReport[8]).time,ReportLink:url,LordName:lordName,Alliance:alliance,CityName:thisReport[6],Coords:thisReport[7],State:thisLoc.zoneName,Burn:round(troops.foodConsumeRate/1m,1),Gold:round(report.scoutReport.scoutInfo.@gold/1m,1),Food:round(report.scoutReport.scoutInfo.resource.food/1m,1),Wood:round(report.scoutReport.scoutInfo.resource.wood/1m,1),Stone:round(report.scoutReport.scoutInfo.resource.stone/1m,1),Iron:round(report.scoutReport.scoutInfo.resource.iron/1m,1),TotalRes:round(resTotal/1m,1)}
+57: reply = json_decode($result)
+58: echo reply.message // (optional for debugging)
+// if the report was already logged, no need to post it to chat again.
+59: if reply.result = "fail" return
+// If the report has less than specified minimum res, dont post it to chat.
+60: if resTotal < 5b return 
+
+// --- Discord Reporting Fix ---
+// Define the message content using underscores to avoid character conflicts
+61: discordMsg = "{Config.server.toLowerCase()}-{player.playerInfo.userName}:_Scout_report_on_" + thisReport[6] + "_(" + thisReport[7] + ")_[" + thisLoc.zoneName + "]_" + lordName + "_[" + alliance + "]_res:_" + FormatNum(resTotal) + "_burn:_" + FormatNum(troops.foodConsumeRate) + "/hr_" + url
+
+// Execute via puturl to bypass the expression engine's character checks
+62: execute "puturl \"https://discord.com/api/webhooks/1488768502767554711/rT-fRTMQzBJOhGCeAyPdzNIQbHS0G2680LKvEApq65ODvo2ZdlV7YFuHD2SEorucvgKM\" {content:discordMsg}"
+
+// post to AC
+62: if spamAC execute "alliancechat Scout report on {thisReport[6]}({thisReport[7]}) [{thisLoc.zoneName}] {lordName} [{alliance}] res: {FormatNum(resTotal)} burn: {FormatNum(troops.foodConsumeRate)}/hr {url}"
+63: return
+// Report on low loyalty cities
+label lowLoyalty
+64: echo "Low loyalty on {thisReport[6]}({thisReport[7]}) {thisLoc.zoneName} owner: {lordName} alliance: {alliance} Loyalty: {report.scoutReport.scoutInfo.@support}"
+65: if gsUrl post gsUrl {sheetName:"LowLoyaltyReports",deleteOld:"Coords",DateTime:date(thisReport[8]).time,ReportLink:url,LordName:lordName,Alliance:alliance,CityName:thisReport[6],Coords:thisReport[7],State:thisLoc.zoneName,Loyalty:report.scoutReport.scoutInfo.@support}
+66: echo json_decode($result).message
+67: return
+// Report on neutral scouts
+label neutralReport
+68: echo "Ooops I scouted a neutral!"
+69: execute "whisper '{lordName}' Thank you for letting me scout your city {thisReport[6]}({thisReport[7]}) {thisLoc.zoneName} {url.replace('http://','')} it was informative!"
+70: return
+// Report on failed scout attempts
+label failedScout
+71: echo "Failed to get scout report on {thisReport[6]}({thisReport[7]}) {thisLoc.zoneName} owner: {lordName} alliance: {alliance}"
+72: if gsUrl post gsUrl {sheetName:"FailedScoutReports",deleteOld:"Coords",DateTime:date(thisReport[8]).time,LordName:lordName,Alliance:alliance,CityName:thisReport[6],Coords:thisReport[7],State:thisLoc.zoneName}
+73: echo json_decode($result).message
+74: return
+// Record the current time so we detect new reports (later than "now")
+label prepRewind
+75: timeBase = date().getTime()
+76: goto rewind
+// server isn't right....
+label sumtingWong
+77: echo "sumtingWong! your server is not one this script is setup for."
