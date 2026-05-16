@@ -1,0 +1,52 @@
+// Silent_Stalker SCOUT ALL CITIES SCRIPT V3.5
+// last update june 9, 2019
+#label autorun
+1: config wartown:0
+
+// this will sleep until a set time of day to do scouting so as not to interfere with farming. 
+// time for script to begin is YOUR local time in military format.
+#sleep @:12:00:00
+// comment out above line if you just want to scout now.
+
+// distance to scout out to (miles)
+2: radius = 20
+// amount of scouts to use to scout
+3: scoutWave = "s:10k"
+
+// NOTHING TO EDIT BELOW HERE
+4: config wartown:1
+5: echo "Beginning scout all cities script..."
+6: execute "scanmap {city.coords} {radius}"
+7: allCities = FindField(city.x,city.y,radius,11).sort(city.compareByDistanceToCastle)
+8: echo "Found {allCities.length} cities within {radius} miles of this city."
+label checkCity
+9: if allCities.length = 0 goto allCitiesScouted
+10: thisCity = allCities.shift()
+// get details on coords, but if server is laggy skip coords
+11: attempts = 0
+label getDetails
+12: details = GetDetailInfo(thisCity, false, 30) 
+13: if details goto gotDetails
+14: if ++attempts < 10 goto getDetails
+15: echo "Server is being laggy, cannot get details on {FieldIdToCoords(thisCity)}, skipping."
+16: goto checkCity
+label gotDetails
+// if you can't scout it, or its in a neutral alliance skip to next city
+17: if ((!details.canScout) || (RelationIndex(details) == 4)) goto checkCity
+// wait for open rally spot (keep 1 open for trainer/ hiding)
+label waitForRally
+18: if city.rallySpotAvailable(1,1) goto scoutIt
+19: echo "Waiting for free rally spot, sleeping for 1 minute..."
+20: sleep 60
+21: goto waitForRally
+label scoutIt
+22: echo "Scouting {details.name}({FieldIdToCoords(thisCity)}) {details.userName} [{details.allianceName}]"
+23: execute "scout {FieldIdToCoords(thisCity)} none {scoutWave}"
+24: goto checkCity
+// done scouting
+label allCitiesScouted
+25: config wartown:0
+26: echo "Finished scouting! You should review & process reports now."
+// sleep for an hour
+27: sleep 60:00
+28: goto autorun
