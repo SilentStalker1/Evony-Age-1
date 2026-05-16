@@ -1,0 +1,102 @@
+//SS MAPSCAN
+
+label autorun
+allowed = [ "PLAYER THAT NOT IN ALLIANCE" ]
+// Extra people allowed to use the script (in addition to alliance members)
+fullscan = true                          // change to true if full map scan at start up is needed
+ttl = 5                                  // map block time-to-live, minutes
+AlertAlliance = true
+
+// no need to change anything below this line
+command "members"
+allowed.push.apply(null, $result.replace(/"([^"]+).+/gm, "$1").split("\n").splice(1))
+
+filter = { channel:"private" }   // Channel in which to monitor.
+if allowed && allowed.length > 0 filter.from = regexp("^(" + allowed.join("|") + ")$", "i")
+p = GetChat(filter, 20) // Enable chat buffer early
+
+// sx*sy - size of the block to rescan (should be multiples of 20)
+sx = 40 
+sy = 40
+bx = int(WIDTH / sx)
+by = int(HEIGHT / sy)
+blocks = Array(bx * by)
+if fullscan && AlertAlliance alliancechat Beginning full map scan
+if fullscan callfunc rescanBlocks(0, 0, bx - 1, by - 1)
+if fullscan && AlertAlliance alliancechat "Full map scan finished! You can now whisper me 'where is anyone'"
+goto Start1
+
+label IdleScan
+i = j = int(random() * blocks.length) // Pick a block, any block.
+if blocks[i] == null || date().getTime() - blocks[i] > ttl * 60000 callfunc rescanBlocks(i MOD bx, int(i / bx), j MOD bx, int(j / bx))
+label Start
+p = GetChat(filter, 20)
+label Start1
+execute p == null && "goto IdleScan" || p.from == player.playerInfo.userName && "goto Start" || "(parts = p.message.split(/ +/)) && func = parts[0] && 'function' + Upper1(parts.shift())"
+execute "callFunc " + (city.script.currentScript.functions[func] && func + "('" + parts.join(" ") + "')" || "UnknownFunction(p.message)")
+if !$error execute $result.length < 135 && "whisper '{p.from}' \"{$result}\"" || "command \"mail '{p.from}' [AI] {$result}\""
+goto Start
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////FUNCTIONS///////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+function functionResources(message)
+   totalRes = GetResources("f:0")
+   cities.forEach(CreateFunction("city,ind,arr","city.cityManager.estResource.addTo(totalRes)"))
+return "Gold:{FormatNumber(totalRes.gold)}, Food:{FormatNumber(totalRes.food)}, Wood:{FormatNumber(totalRes.wood)}, Stone:{FormatNumber(totalRes.stone)}, Iron:{FormatNumber(totalRes.iron)}."
+
+function functionWhere(message) // In case someone insists on typing "where is" or "where"...
+   parts = message.split(" ")
+   if parts[0].toLowerCase() == "is" parts.shift() && (message = parts.join(" "))
+   callfunc functionWhois(message)
+return $result
+
+function functionWho(message) // In case someone insists on typing "who is" or "who"...
+   parts = message.split(" ")
+   if parts[0].toLowerCase() == "is" parts.shift() && (message = parts.join(" "))
+   callfunc functionWhois(message)
+return $result
+
+function functionWhois(message)
+   command "who {message}"
+   if ($error) return "The player '{message}' was not found. Check the spelling and capitalization and try again..."
+   playerWho = $result.match(/.*: (.*), .*: (.*), .*: (.*), .*: (.*), .*: (.*), .*: (.*), .*: (.*), .*: (.*), .*: (.*)/)
+   playerCoords = SearchCastles(playerWho[1]).filter(CreateFunction("castle,i,a","castle.userName == playerWho[1]")).map(CreateFunction("castle,i,a","castle.coords"))
+   if !(playerCoords.length) return "No cities where found for {playerWho[1]}. Maybe I need to scan the map? Try the ScanMap function..." 
+return "{playerWho[1]}: {playerCoords.join('\n')}"
+
+function functionScanmap(message)
+   coords = StateCoords(message.toLowerCase() || "all")
+   if coords execute "whisper '{Global.p.from}' Scanning {coords}" 
+   if coords callfunc rescanBlocks(int(coords.split(" ")[0].split(",")[0] / Global.sx), int(coords.split(" ")[0].split(",")[1] / Global.sy), int(coords.split(" ")[1].split(",")[0] / Global.sx), int(coords.split(" ")[1].split(",")[1] / Global.sy))
+return coords && "Scan completed" || "Sorry, it seems the state you entered isn't an Evony state... Try again."
+
+function SearchHeroes(message)
+   execute (message=="") && 'return "Uh oh, you forgot to specify whos heroes to search... Try: SearchHeroes PlayerName"' || !(city.script.variables["AllHeroes"]) && 'return "Uh oh, looks like we have not done a hero scan, try the ScanHeroes function..."'
+   resultHeroes = AllHeroes.filter(CreateFunction("heroes,i,a","heroes.owner.toLowerCase() == message.toLowerCase()"))
+   if (resultHeroes.length) return "found {resultHeroes.length} heroes for {message}:\nRank  \tLevel \tPol \tAtk \tInt\tName\n" +resultHeroes.map(CreateFunction("h,i,a","'['+h.rank+']  \t'+h.level+' \t'+h.pol+' \t'+h.att+' \t'+h.int+' \t'+h.name")).join("\n").slice(0,400)
+return "Uh oh, we couldn't find any heroes for the player {message}..."
+
+function ScanHeroes(message)
+   if Number(message) > 3000 return "Woah! That's a little high, {Number(message)}? really? Come on... Try a little lower a number."
+   command "searchheroes * lvl 1 {Number(message)}"
+   execute "AllHeroes = [ " + $result.replace(/^"(.*?)",(".*?"),(".*?"),"(.*?)","(.*?)","(.*?)","(.*?)"$/gm, "\{ rank:$1, name:$2, owner:$3, level:$4, att:$5, int:$6, pol:$7  \}").split("\n").splice(2).join(",\n") + " ]"
+return "Whoop! We've listed {message} pages of heroes!"
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////END/////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+end
+
+//Here we define non-user functions... The ones that make shit work...
+
+function UnknownFunction(message)
+   //If this function is reached, an allowed user failed to provide a fitting whisper.
+   //Just to check if they're using manners or not, here:
+return (["sorry", "thanks", "ta", "cheers", "tnx", "thank you", "ty"].indexOf(message.toLowerCase()) >= 0) && "Don't mention it!" || "I'm sorry, I have no idea what you're asking me."
+
+function rescanBlocks(x1, y1, x2, y2) // Used to scan the map in specified "blocks". Useful for background scanning.
+execute "rescanmap {x1*Global.sx},{y1*Global.sy} {x2*Global.sx+Global.sx-1},{y2*Global.sy+Global.sy-1}"
+(arx = Array(x2-x1+1)) && (ary = Array(y2-y1+1)) && (now = date().getTime()) && ary.forEach(CreateFunction("v,i,a", "(offset=(y1+i)*Global.bx+x1) && false || arx.forEach(CreateFunction('v,i,a','Global.blocks[offset+i]=now'))"))
+return
